@@ -23,7 +23,7 @@
 					<uni-nav-bar shadow right-icon="right" title="开启阴影" />
 					<uni-nav-bar shadow right-icon="right" title="开启阴影" />
 					<uni-nav-bar shadow right-icon="right" title="开启阴影" />			
-					<button @click="getInfo">登录</button>
+					<button @click="toLogin">登录</button>
 				</view>
 			</view>
 			
@@ -33,6 +33,7 @@
 </template>
 
 <script>
+	import useUserStore from '@/store/user'
 	export default {
 		data() {
 			return {
@@ -49,21 +50,16 @@
 				backgroundColor: this.bgColor,
 				frontColor: this.fontColor
 			})
+			const userStore = useUserStore();
+			const { nickName, avatarUrl } = userStore.wxinfo;
+			this.nickName = nickName;
+			this.avatarUrl = avatarUrl;
 		},
 		methods: {
-			getInfo(){
-				if(uni.getUserProfile){
-					uni.getUserProfile({
-						lang:'zh_CN',
-						desc:'用来授权登录该小程序！',
-						success: (res) => {
-							console.log(res)
-							const info = res.userInfo;
-							this.nickName = info.nickName;
-							this.avatarUrl = info.avatarUrl;
-						}
-					})
-				}
+			toLogin(){
+				uni.navigateTo({
+					url:'/pages/index/login'
+				})
 			},
 			btnScanCode(){
 				uni.scanCode({

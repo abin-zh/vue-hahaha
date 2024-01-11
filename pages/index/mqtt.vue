@@ -65,6 +65,7 @@
 				</checkbox-group>
 			</view>
 			<view class="btn-group">
+				<!-- 连接 -->
 				<button v-if="!connected" @click="createConnection" class="btn-conn" type="default">连接</button>
 				<button v-else class="btn-conn" type="default" disabled>连接</button>
 				<button @click="destroyConnection" type="warn">断开连接</button>
@@ -73,6 +74,18 @@
 					<text v-if="!connected" style="color: rgb(255, 109, 109);">未连接</text>
 					<text v-else style="color: rgb(66, 216, 133);">已连接</text>
 				</view>
+			</view>
+			<view class="btn-group">
+				<!-- 获取主题信息 -->
+				<button @click="doSubscribe" type="primary">订阅主题</button>
+				<button @click="doUnSubscribe" type="warn">取消订阅</button>
+				<button disabled></button>
+			</view>
+			<view class="msg_list">
+				<text>消息列表</text>
+				<p v-for="(item,index) in msgs">{{item.name}}：{{item.msg}}
+					<hr>
+				</p>
 			</view>
 		</view>
 	</view>
@@ -94,6 +107,7 @@
 		},
 		data() {
 			return {
+				//连接参数
 				connection: {
 					// #ifdef MP-WEIXIN
 					protocol: "wxs",
@@ -116,10 +130,12 @@
 					password: "emqx_test",
 					keep_alive: 60,
 				},
+				//订阅
 				subscription: {
 					topic: "topic/mqttx",
 					qos: 0,
 				},
+				//发布
 				publish: {
 					topic: "topic/browser",
 					qos: 0,
@@ -134,10 +150,14 @@
 				connecting: false,
 				retryTimes: 0,
 				ssl: false,
-				connected: false
+				connected: false,
+				//消息列表
+				msgs:[]
 			}
 		},
 		methods: {
+			//方法、参数参考https://www.emqx.com/en/blog/how-to-use-mqtt-in-vue
+			//初始化
 			initData() {
 				this.client = {
 					connected: false,
@@ -146,6 +166,7 @@
 				this.connecting = false;
 				this.subscribeSuccess = false;
 			},
+			//重连操作
 			handleOnReConnect() {
 				this.retryTimes += 1;
 				if (this.retryTimes > 5) {
@@ -168,28 +189,38 @@
 						endpoint,
 						...options
 					} = this.connection;
+					//连接链接
 					const connectUrl = `${protocol}://${host}:${port}${endpoint}`;
 					this.client = mqtt.connect(connectUrl, options);
 					if (this.client.on) {
+						//连接监听
 						this.client.on("connect", () => {
 							this.connecting = false;
 							this.connected = true;
 							console.log("Connection succeeded!");
 						});
+						//重连监听
 						this.client.on("reconnect", this.handleOnReConnect);
+						//错误监听
 						this.client.on("error", (error) => {
 							console.log("Connection failed", error);
 						});
+						//消息监听
 						this.client.on("message", (topic, message) => {
+							//消息处理
+							// console.log(`Received message ${message} from topic ${topic}`);
 							this.receiveNews = this.receiveNews.concat(message);
-							console.log(`Received message ${message} from topic ${topic}`);
+							const data = JSON.parse(message);
+							this.msgs.push(data);
 						});
 					}
 				} catch (error) {
+					//连接失败
 					this.connecting = false;
 					console.log("mqtt.connect error", error);
 				}
 			},
+			//断开连接
 			destroyConnection() {
 				if (this.client.connected) {
 					try {
@@ -203,6 +234,7 @@
 					}
 				}
 			},
+			//订阅主题
 			doSubscribe() {
 				const {
 					topic,
@@ -219,6 +251,16 @@
 					console.log('Subscribe to topics res', res)
 				})
 			},
+			//取消订阅
+			doUnSubscribe() {
+			  const { topic } = this.subscription
+			  this.client.unsubscribe(topic, error => {
+			    if (error) {
+			      console.log('Unsubscribe error', error)
+			    }
+			  })
+			},
+			//发布消息
 			doPublish() {
 				const {
 					topic,
@@ -308,6 +350,21 @@
 		display: flex;
 		align-items: center;
 		font-weight: bold;
+	}
+	
+	.msg_list{
+		background-color: white;
+		padding: 16px;
+	}
+	
+	.msg_list text{
+		padding: 4px;
+		border-radius: 4px;
+		background-color: #e3e3e3;
+	}
+	
+	.msg_list p{
+		margin-top: 8px;
 	}
 
 	uni-button {

@@ -1,5 +1,5 @@
 const config={
-	baseUrl:'http://api.jqrjq.cn/',
+	baseUrl:'https://api.jqrjq.cn/',
 	timeOut:6000,
 	env:'dev'
 }

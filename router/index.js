@@ -7,14 +7,14 @@ const whiteList = [
 	'/pages/index/register',
 	'/pages/index/wiki',
 	'/pages/index/crop',
-	
-	
+	'/pages/index/wx_login',
 ]
 
 function hasPermission(url) {
 	let islogin = uni.getStorageSync('isLogin');
 	islogin = Boolean(Number(islogin)); //返回布尔值
 	// 在白名单中或有登录判断条件可以直接跳转
+	console.log(islogin)
 	if (whiteList.indexOf(url) !== -1 || islogin) {
 		return true
 	}
@@ -28,12 +28,11 @@ export default async function() {
 			invoke(e) {
 				// 获取要跳转的页面路径（url去掉"?"和"?"后的参数）
 				const url = e.url.split('?')[0]
-				if(whiteList.includes(url)){
+				if(whiteList.includes(url) || hasPermission()){
 					console.log('url', url,e)
 					// 判断当前窗口是白名单，如果是则不重定向路由
 					return true;
-				}
-				else{
+				} else{
 					uni.showToast({
 						title: '用户没有权限...',
 						duration: 2000,
@@ -42,8 +41,11 @@ export default async function() {
 					return false
 				}
 			},
-			fail() {
-				
+			success(res) {
+				console.log(res);
+			},	
+			fail(res) {
+				console.log(res);
 				return false
 			}
 		})

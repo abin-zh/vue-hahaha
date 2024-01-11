@@ -7,6 +7,7 @@ import {
 const useUserStore=defineStore('user',{
 	state:()=>({
 		token:'',
+		openid:'',
 		userinfo:{
 			id:0,
 			state:0,
@@ -15,15 +16,30 @@ const useUserStore=defineStore('user',{
 			token:'',
 			binding:0,
 			email:'',
-			mobile:''	
+			mobile:'',
+		},
+		wxinfo:{
+			avatarUrl: "",
+			city: "",
+			country: "",
+			gender: 0,
+			language: "",
+			nickName: "",
+			province: ""
 		}
 	}),
 	actions:{
 		setToken(token){
-			this.token=token
+			this.token=token;
+		},
+		setOpenId(openid){
+			this.openid = openid;
 		},
 		fillUser(userinfo){
 			this.userinfo=userinfo;
+		},
+		fillUserWx(wxinfo){
+			this.wxinfo = wxinfo;
 		}
 	},
 
