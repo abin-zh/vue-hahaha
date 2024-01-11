@@ -1,0 +1,20 @@
+
+.big-msg{
+		height: 100px;
+		background-color: white;
+		padding: 8px 16px;
+		margin-top: 16px;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+}
+.msg-user{
+		height: 30px;
+		border-radius: 4px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		background-color: #e3e3e3;
+		font-weight: bold;
+}

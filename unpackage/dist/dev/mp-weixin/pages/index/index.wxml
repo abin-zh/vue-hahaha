@@ -1,0 +1,1 @@
+<view class="container"><view class="header"><view><button bindtap="{{a}}" type="primary">添加大事件</button></view></view><view class="title">你创建的大事件</view><bigmsg wx:for="{{b}}" wx:for-item="item" u-i="{{item.a}}" bind:__l="__l" u-p="{{item.b}}"></bigmsg></view>

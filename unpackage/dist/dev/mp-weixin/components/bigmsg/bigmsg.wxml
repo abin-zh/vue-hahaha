@@ -1,0 +1,1 @@
+<view class="big-msg"><view class="msg-user">用户：{{a}}</view><view class="msg-content">{{b}}</view><view class="msg-time">发生时间: {{c}}</view></view>
